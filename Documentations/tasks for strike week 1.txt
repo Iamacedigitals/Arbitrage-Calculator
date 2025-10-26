@@ -1,0 +1,42 @@
+Wednesday :>>> 
+Go to the field and sell all the cakes before 3pm. 
+Eat before coming home. no food in the night.
+Buy bananas for banana bread 
+Buy things for soup tommorow
+Go to church.
+Check for tasks that can help you conceptualize Array Oriented Programming with numpy and Start Pandas. -> TRY AND PRINT IN UI QUICKLY [136-165]
+## Note always and always check out the topics you want to read prior to the day of reading so that you can build interest
+
+Thursday :>>>
+Wake up early and read from 6am -> 10am : PHYSICS(Magnetism) and solve schaum
+Cook -> Soup and Eba -> Okra
+Start baking by 2pm
+Finish baking and cleaning by 5:30pm
+Sleep
+Wake up and continue tasks on numpy and pandas
+join prayers by 9pm
+continue
+## Note always and always check out the topics you want to read prior to the day of reading so that you can build interest
+
+Friday :>>> 
+Make parfait and deliver before 10am
+Read ENGLISH() 11:30 AM -> 3:30 PM 
+Rest 1hr(Walk/sleep) 
+Start Pandas by 5pm and also practice numpy conceptualizations and more work on the arbitrage vectorized stuff till 12am()
+Read ENGLISH() 2am -> 4am 
+
+Saturday :>>>
+Read COS102 6am -> 11 am
+come Home before 12:30pm
+Clean - cook and rest before 2:30pm -> Rice 
+go for evangelism by 3:30pm
+come back by 7pm
+Practice Pandas and numpy conceptualizations and work more on the arbitrage stuff. Try and look for real market data to use for practice of these three concepts
+
+Sunday :>> 
+Go to church
+Cook Soup -> Egusi and Ogbono -> before 5:30 pm
+Clean and sleep a bit 
+Wake up and study MTH 103: Pls Print it and use the textbook too 8pm -> 2am
+
+

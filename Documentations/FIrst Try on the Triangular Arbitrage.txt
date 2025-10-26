@@ -1,0 +1,74 @@
+an arbitrage exists when the implied cross rate is not equal to the quoted cross rate
+
+quoted cross rate for btc
+
+btcusdt = 70 000
+btcngn = 70 000 000 ngn(Q)
+usdt ngn = 997 
+
+How did i get this implied cross rate 
+if 1 dollar is 997 ngn
+and 70000 dollar give 1 btc 
+how many ngn will give 1 btc
+
+Calculation is 
+1 usd = 997 ngn
+70 000 usd = x ngn
+
+since x ngn = 1 btc
+then 997 * 70 000 usd = 1 BTC
+btcngn implied == 69 790 000 BTC(I)
+
+COnceptualization:
+How did we come up with this 
+
+to come up with this we need an algorithm to compare the rates, How?? By comparing the values for 2 conversion rates by nultipling any two together
+for instance
+if btcngn is 70 000 is usdtngn * btcusdt == btcngn if yes try another pair if no arbitrage exists
+now for arbitrage to e profittable then the btcusdt * usdtngn must be less than that of btcngn else ARBITRAGE IS NOT PROFITTABLE
+
+Lets test it
+1 btc = 70 000 usdt
+x btc =  1 usdt
+0.0000142857 btc
+
+since x btc = 997 ngn
+0.0000142857 = 997 ngn
+
+now usdtngn in this case is given by 
+usdt ngn = btcngn * 
+0.0000142857 * 70 000 000 = 1000 ngn
+
+
+Btc 
+buy usdt with ngn and buy btc with usdt and then sell btc for ngn
+
+ngn -> Usdt -> Btc -> ngn
+
+say we invest 1000 usd in this arbitrage
+
+1000 usdt = 1000 * 997 / ngn
+= 997 000 ngn
+
+quoted cross rate = 70 000
+
+1000 usdt = x btc
+70000 usdt = 1 btc
+if 1usdt = 1 000 ngn
+
+implied cross rate
+
+1000 usdt = 0.01428
+
+btc  ->  ngn = 1 000 000 ngn
+
+profit of 30 000 000
+
+
+		  Ngn    
+	     / 		 \
+	    / 	          \
+	  btc	------	usdt
+
+
+the value of the final currency must be worth something else the arbitrage will be worthless	

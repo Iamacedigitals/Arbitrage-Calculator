@@ -1,0 +1,358 @@
+Lets restart
+
+Btcngn = 70 000 000
+Btcusdt = 70 000
+Usdtngn = 997
+
+For arbitrage to exist then the Inplied cross rate must not be equal to the quoted cross rate| 
+Whether it is greater or lesser to be profitable will be determined in this test|
+
+
+First Path test:
+
+NGN(capital currency) -> USDT(INTERMEDIARY) -> BTC(Destination currency) -> NGN(Retained capital)
+
+Arbitrage to exist we check if the conversion from ngn -> usdt gives us more usdt notes to buy more btc, does it??
+
+1 USDT = 997 NGN (QUOTED)
+______________________
+
+\\ in-code concepts [x is btc, y is usdt, z is ngn]
+
+1 btc = 70 000 usdt (xy)
+
+1 btc = 70 000 000 ngn (xz)
+
+1 btc = 1 btc
+70 000 000 ngn = 70 000 usdt
+x ngn = 1 usdt
+
+1 usdt = 70 000 000 / 70 000 ngn
+
+* implies that ...
+
+1 usdt = 1000 ngn
+
+__________________________
+
+0r USDTNGN = 1000(IMPLIED)
+
+IMPLIED > QUOTED
+
+ARBITRAGE CONFIRMED
+
+now we can say an arbitrage exists --- How did this come to our realization
+
+we were trying to compare the current destination currency to see if it would represent a change in value
+
+Now lets see the arbitrage
+______________________________
+
+so first lets see how much usdt we can buy with ngn if we need to get 1 full btc
+1 btc = 70000 usdt
+1 usdt = 997 ngn
+70 000 usdt = x ngn
+
+x ngn should give us 1 btc if we are to carry on with the arbitrage
+
+x ngn = 1 btc = 997 * 70 000 = 69 790 000 ngn
+
+now we have 1 btc which we have bought with 70 000 usdt but with an actual price of 69 790 000 ngn |
+this is possible even though the quoted rate for BTCNGN is 70 000 000, Therefore leaves us with a profit of 210 000 ngn
+
+
+
+Second Path test:
+
+USDT(Capital Currency) -> BTC(INTERMEDIARY) -> NGN(Destination currency) -> USDT(Retained capital)
+example | incode >> Just to ensure that the code is accurate 
+1 BTC | btc = 70 000 USDT (QUOTED) -> BTC USDT | ngn
+
+____________________________________________________
+
+1 ngn | usdt = 0.00100300902708124373119358074223 usdt | btc
+1 ngn | usdt = 1.4285714285714285714285714285714e-8 btc | ngn
+
+1 ngn = 1 ngn
+1.4285714285714285714285714285714e-8 btc = 0.00100300902708124373119358074223 usdt
+
+0.00100300902708124373119358074223 / 1.4285714285714285714285714285714e-8 [usdt]
+
+70,210.631895687061183550651956101 usdt
+________________________________________
+
+or 1 BTC = 70,210.631895687061183550651956101 Usdt (IMPLIED)
+
+IMPLIED < QUOTED
+
+ARBITRAGE CONFIRMED
+
+Now let us see how much btc we can buy with usdt if we had to get 1 full naira 
+
+1 btc | btc = 70 000 usdt | ngn
+1.4285714285714285714285714285714e-8 btc | btc = x usdt | ngn
+ 
+x usdt = 70 000 * 1.4285714285714285714285714285714e-8 = 9.9999999999999999999999999999998e-4 usdt|  
+------------------------------------------------------------------------------------------------------
+this is basically not practical | OH BUT IT IS!!
+
+Lets take a test with real cash
+
+1000 usd capital was invested into this model
+
+conv -> btc
+
+1000 usd = x btc if 
+70 000 usd = 1 btc
+
+0.01428571428571428571428571428571 btc has been bought
+
+conv to naira 
+since 
+1 btc = 70 000 000 naira 
+0.01428571428571428571428571428571 btc = x naira
+
+0.01428571428571428571428571428571 * 70 000 000 = 1 000 000 naira
+
+conv naira to usdt back
+
+1 usdt = 997 naira 
+x usdt = 1 000 000
+
+x usdt = 1 000 000 / 997 = 1 003 usdt {PROFIT}
+
+Oh after testing with real cash i finally understand what this number {9.9999999999999999999999999999998e-4 usdt} means. 
+It is actually lesser that ngnusdt by almost a factor of ten "e-4 while ngnusdt e-3" it means when i use this path i would be able to by naira cheaper with usdt same as above. 
+This shows another profit when the implied was LESSER than the quoted rat
+
+
+
+Third path test:
+BTC(Capital Currency) -> NGN(INTERMEDIARY) -> USDT(Destination currency) -> BTC(Retained capital)
+
+1 NGN = 1.4285714285714285714285714285714e-8 BTC (QUOTED)
+____________________________________________________
+
+1 usdt = 997 ngn
+1 usdt = 1.4285714285714285714285714285714e-5 btc
+
+1 usdt = 1 usdt
+997 ngn = 1.4285714285714285714285714285714e-5 btc
+
+1.4285714285714285714285714285714e-5 / 997 btc can buy 1 ngn
+
+1.432870038687491044562258203181e-8 of btc is needed to buy 1 ngn
+_____________________________________________________________________
+
+or 1 NGN = 1.432870038687491044562258203181e-8 (IMPLIED)
+
+IMPLIED > QUOTED
+
+ARBITRAGE CONFIRMED 
+
+Now lets see how much ngn we can buy with btc if we had to get 1 full usdt
+1 ngn =  1.4285714285714285714285714285714e-8 btc
+997 ngn = x btc
+
+x btc = 997 * 1.4285714285714285714285714285714e-8 btc
+
+= 1.4242857142857142857142857142857e-5 btc
+
+_________________________________________________________________________
+
+Still doesnt fully make sense 
+
+lets try capital 
+
+1 btc was invested into this model
+
+conv -> ngn
+
+1 btc converts to 70 000 000 ngn
+
+conv -> usdt
+70 000 000 = x usdt
+997 ngn = 1 usdt
+
+x usdt = 70 210 usdt
+
+conv -> btc 
+
+70 000 = 1 btc 
+70 210 = x btc
+
+x = 1.003 btc {Profit}
+
+This is almost an insignificant amount of money but it will amount to the same profit as when we use the first model with a full btc. the same 210,000 ngn. buts we can also still try same for the second model if the capital is larger. it think it will amount to the same since there is a profit of 3 usd per 1000usd which if we multiply by 70 is roughly 210 usd which is roughly 210,000ngn
+sharp
+
+
+
+ngn(z) -> btc(y) -> usd(z) -> ngn
+
+1 btc = 70 000 000 (q)
+
+___________________________________
+1 usd = 997 (xz) ngn
+1 usd =  1.4285714285714285e-05 (xy) btc
+
+
+implied rate = 997 / 1.4285714285714285e-05
+1 btc =69790000. ngn
+
+implies that we would  be buying 1 btc f0r 69790000. ngn
+
+arb exists
+________________________________
+
+now lets see how much we can by btc with ngn if we need to get 1 usdt
+
+1 btc  = 70 000 000ngn
+x btc = 997 ngn
+
+usdtngn| 997 / 70 000 000 | btcngn
+
+= 1.4242857142857142857142857142857e-5 
+
+
+HAPPY coding ...... 
+ 
+in coding notes
+
+from BTC -> z
+to USD -> Y
+Through NGN -> x
+
+BTC NGN (quoted) # User Inputs
+calc BTC USD (implied)
+implied = xz / xy
+
+xz = BTC NGN
+xy = USD NGN
+
+if Implied != quoted 
+
+Arbitrage exists
+
+conv BTC(Y) to NGN(this is x)
+
+and the conv NGN to usd 
+
+
+_____________________________________________________________________
+
+and of course i will rewrite the third version of the triangular arbitrage 
+
+
+test data 1
+
+Input Currency: >> BTC
+Input Currency: >> usd
+Input Currency: >> ngn
+Input value for BTCngn : >> 70000000
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08}
+
+Input value for BTCusd : >> 70000
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05}
+
+Input value for usdngn : >> 997
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05, 'usdngn': 997.0, 'ngnusd': 0.0010030090270812437}
+
+['BTCngn', 'BTCusd', 'usdngn'] # >> symbols 
+['ngnBTC', 'usdBTC', 'ngnusd'] # >> inv_symbols - inverted symbols 
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05, 'usdngn': 997.0, 'ngnusd': 0.0010030090270812437}
+
+
+The quoted is 997.0 and the implied is 1000.0 70210.63189568707 # >> gives the implied cross rates of usd ngn and btc usd
+You will get a profit of 3.00902708124363 # >> this value is in ngn from investing 1000 ngn
+
+The quoted is 70000000.0 and the implied is 69790000.0 1.4242857142857143e-05 # >> gives the implied cross rates of btc ngn and usd btc 
+You will make a loss of 3.0
+
+The quoted is 70000.0 and the implied is 70210.63189568705 1.4328700386874911e-08
+You will get a profit of 3.009027081243744
+
+The quoted is 1.4285714285714286e-08 and the implied is 1.432870038687491e-08 1000.0
+You will get a profit of 3.00902708124363
+
+The quoted is 1.4285714285714285e-05 and the implied is 1.4242857142857143e-05 0.001
+You will make a loss of 3.0
+
+The quoted is 0.001003009027081243 and the implied is 0.001 69790000.0
+You will make a loss of 3.0
+
+
+this gives us the 6 possible paths which the arbitrage can exist...... 
+
+notice that we have exactly 3 wins and losses. value is conserved in those 3 wins and losses but 3 nair is not 3 usd. even we are making 3 usd per 100 usd which will be insanely minute guy lol
+
+
+test data 2 
+
+Input Currency: >> eur
+Input Currency: >> gbp
+Input Currency: >> ngn
+
+Input value for eurngn : >> 1230
+Input value for eurgbp : >> 1.11
+Input value for gbpngn : >> 1340
+
+['eurngn', 'eurgbp', 'gbpngn']
+['ngneur', 'gbpeur', 'ngngbp']
+
+{'eurngn': 1230.0, 'ngneur': 0.0008130081300813008, 'eurgbp': 1.11, 'gbpeur': 0.9009009009009008, 'gbpngn': 1340.0, 'ngngbp': 0.0007462686567164179}
+The quoted is 1340.0 and the implied is 1108.108108108108 0.917910447761194
+You will make a loss of 173.0536506655909
+
+The quoted is 1230.0 and the implied is 1487.4 1.089430894308943
+You will get a profit of 209.2682926829268
+
+The quoted is 1.11 and the implied is 0.917910447761194 0.000672314105149926
+You will make a loss of 173.0536506655909
+
+The quoted is 0.0008130081300813008 and the implied is 0.000672314105149926 1108.108108108108
+You will make a loss of 173.05365066559102
+
+The quoted is 0.9009009009009008 and the implied is 1.089430894308943 0.000902439024390244
+You will get a profit of 209.26829268292704
+
+The quoted is 0.0007462686567164179 and the implied is 0.0009024390243902439 1487.4
+You will get a profit of 209.26829268292704
+
+
+also notice that whenever the implied is greater then there is a profittable arbitrage. so this is a rule of thumb for us to filter out the neccesary conditions for our profittable arbitrage
+
+
+now lets consider conversion charges 
+conversion charges are usually like 0.01% of the total trading volume per conversion
+
+for every conversion the exchange will take 0.01% of the trading Volume 
+
+say we invested 1000 ngn to buy usd the charges will be 0.01% of 1000 = 0.1ngn
+for 1000 usd = 0.1usd 
+for 1 btc =  0.0001btc 
+
+
+one way to vectorize this is to put all of the quote data inside a matirx and solve simultenously
+into a system of 6,4 matrix -> go back and study the linear algebra and eigen values
+
+|quoteYZ| implied |  XZ  |    XY |   pnl  |
+__________________________________________
+| btcngn|[I]btcngn|usdngn| usdbtc| = pnl 1|
+| ngnbtc|[I]ngnbtc|usdbtc| usdngn| = pnl 2|
+| usdngn|[I]usdngn|btcngn| btcusd| = pnl 3|
+| ngnusd|[I]ngnusd|btcusd| btcngn| = pnl 4|
+| usdbtc|[I]usdbtc|ngnusd| ngnbtc| = pnl 5|
+| btcusd|[I]btcusd|ngnbtc| ngnusd| = pnl 6|
+
+however there is a problem here, omor i will read up on linear algebra. 
+every matrix gives the value for x,y, z and all for each equation.
+but in this matrix i alreadt have the value for x,y,z but i am looking for one of the columns whichis the pnl column
+can spans work. lets see how it goes sha. and also can the system even exist if the operations is not really addition or subtraction or can it be a composite functions like (a*b) - c = d
+all this questions will be answered
+
+>>>>>..............

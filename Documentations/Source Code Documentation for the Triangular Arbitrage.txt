@@ -1,0 +1,108 @@
+Original Source code for Arbitrage.py and Arbitrage_module.py
+
+Arbitrage_module.py >>>> 
+
+>>> IN: 
+class Arbitrage:
+   	#Checks if an arbitrage exists
+    	#Performs the arbitrage
+    	#Calculates the Profits and losses 
+    def __init__(self, quoted_rate):
+        self.quoted_rate = quoted_rate
+        self.implied_rate = 0
+        self.capital = 1000000
+        self.selling_price = 0
+        ###
+        self.charges = (0.01/100)
+        self.xy_rate = 0
+        self.xz_rate = 0
+    def conv_implied_rate(self, xy, xz):
+    	# xy is the value of the destination currency that was quoted on the exchange with the intermediate,
+    	# xz is the value quoted with the capital currency (read second try on arbitarage for more details)
+        self.xy_rate = xy
+        self.xz_rate = xz
+        self.implied_rate = self.xz_rate/self.xy_rate
+        second_implied_rate = self.xz_rate/self.quoted_rate
+        if self.implied_rate != self.quoted_rate:
+            print(f'The quoted is {self.quoted_rate} and the implied is {self.implied_rate}')
+            return self.implied_rate
+	elif self.implied_rate == quoted rate:
+	    print("Arbitrage cannot exist")
+	    return self.implied_rate
+    def conv_pnl(self):
+        conv_capital = self.capital/self.quoted_rate # self.quoted is the same as yz
+        conv_intermediary = conv_capital / self.xy_rate
+        self.selling_price = conv_intermediary * self.xz_rate
+        if self.selling_price > (self.capital+self.charges):
+            pnl = self.selling_price - (self.capital + self.charges)
+            return f'You will get a profit of {pnl}'
+        elif self.selling_price < (self.capital+self.charges):
+            pnl = (self.capital+self.charges) - self.selling_price
+            return f'You will make a loss of {pnl}'
+        return self.selling_price
+
+
+
+Arbitrage.py >>>>
+
+from itertools import *
+from Arbitrage_module import *
+
+count = 0
+currency_list = []
+while count < 3:
+    currency_query = input("Input Currency: >> ")
+    currency_list.append(currency_query)
+    count += 1
+
+arbitrage_path = permutations(currency_list) # Gives the permutated list of the currencies
+currency_pair_values = {}
+value_query = 0
+paths = []
+symbols = []
+inv_symbols = []
+for path in arbitrage_path:
+    c_symbols = combinations(path, 2)
+    paths.append(list(c_symbols))
+
+for quotes in paths:
+    if len(currency_pair_values) <= 5:
+        symbols.append(f'{quotes[0][0]}{quotes[1][1]}')
+        inv_symbols.append(f'{quotes[1][1]}{quotes[0][0]}')
+        value_query = float(input(f"Input value for {quotes[0][0]}{quotes[1][1]} : >> "))
+        currency_pair_values[f'{quotes[0][0]}{quotes[1][1]}'] = value_query
+        currency_pair_values[f'{quotes[1][1]}{quotes[0][0]}'] = 1/value_query
+
+
+print(symbols)
+print(inv_symbols)
+print(currency_pair_values)
+
+transaction1 = Arbitrage(currency_pair_values[symbols[2]]) # this initializes the quoted rate of in this case btc usd
+transaction1.conv_implied_rate(xy=currency_pair_values[symbols[1]],xz=currency_pair_values[symbols[0]])
+print(transaction1.conv_pnl())
+
+transaction2 = Arbitrage(currency_pair_values[symbols[0]])
+transaction2.conv_implied_rate(xy=currency_pair_values[inv_symbols[1]],xz=currency_pair_values[symbols[2]])
+print(transaction2.conv_pnl())
+
+transaction3 = Arbitrage(currency_pair_values[symbols[1]]) 
+transaction3.conv_implied_rate(xy=currency_pair_values[inv_symbols[0]],xz=currency_pair_values[inv_symbols[2]])
+print(transaction3.conv_pnl())
+
+transaction4 = Arbitrage(currency_pair_values[inv_symbols[0]])
+transaction4.conv_implied_rate(xy=currency_pair_values[symbols[2]],xz=currency_pair_values[inv_symbols[1]])
+print(transaction4.conv_pnl())
+
+transaction5 = Arbitrage(currency_pair_values[inv_symbols[1]])
+transaction5.conv_implied_rate(xy=currency_pair_values[inv_symbols[2]],xz=currency_pair_values[inv_symbols[0]])
+print(transaction5.conv_pnl())
+
+transaction6 = Arbitrage(currency_pair_values[inv_symbols[2]])
+transaction6.conv_implied_rate(xy=currency_pair_values[symbols[0]],xz=currency_pair_values[symbols[1]])
+print(transaction6.conv_pnl())
+
+
+>>> Initial Source Code for the Arbitrage Algorithm >>>
+Copyright Acedigitals 2025 -> David Chinonso Odii 
+

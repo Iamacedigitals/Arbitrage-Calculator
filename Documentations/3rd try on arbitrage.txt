@@ -1,0 +1,160 @@
+This Documentation explains the sequential and vectorized form of handling the triangular arbitrage with Python
+
+An arbitrage is a discrepancy in the value of comodities in the financial markets. When a comodity is quoted at a certain rate and the value of that same comodity
+with respect to another comodity is quoted we can find the implied rate of the comodity if we just check out the conversion rates
+
+1 btc = 70 000 000 ngn
+1 btc = 70 000 usd
+1 usd = 997 ngn
+
+From a laymans view nothing much is happening but we we look closely how can this quotes be true
+
+Eventually we see that if 70 000 000 ngn = 70 000 usd , it means 1 usd is actually by "implication" 1000ngn not 997
+So using this analogy we built an arbitrage calculator which compares the value of three currencies and calculates their implied value while also checking for profits
+
+
+Data from the code and the output of all the 6 transactions 
+
+ngn -> usd -> btc | quoted is usd ngn | transaction 1 -> xz is btc ngn, xy is btc usd [d]
+ngn -> btc -> usd | quoted is btc ngn | transaction 2 -> xz is usd ngn, xy is usd btc [d]
+usd -> ngn -> btc | quoted is ngn usd | transaction 3 -> xz is btc usd, xy is btc ngn []
+usd -> btc -> ngn | quoted is btc usd | transaction 4 -> '' is ngn usd, xy is ngn btc [d]
+btc -> usd -> ngn | quoted is usd btc | transaction 5 -> '' is ngn btc, xy is ngn usd [d]
+btc -> ngn -> usd | quoted is ngn btc | transaction 6 -> '' is usd btc, xy is usd ngn[d]
+
+
+these quotes are definitely from the first permutaions 
+
+this could be a guide to setting the proper quotes 
+
+how are the conversions carried out -> the conversions are carried out using the z y x model explained above and re-explained in 3 
+
+
+
+
+Firstly before hands on code lets run a test on the process to get a heuristic for the sequential process
+
+>> # THE REAL DEAL
+CURRENCIES = [BTC, USD, NGN]
+SYMBOL COMNINATIONS = PERMUTATION(CURRENCIES) -> THIS GIVES US 6 OF THE POSSIBLE QUOTES THAT WE CAN GET
+CURRENCY VALUES = {BTCUSD: 70 000, USDNGN: 997, BTCNGN: 70 000 000, AND SO ON FOR THE INVERTED SYMBOLS LIKE NGNBTC = 1/BTCNGN }
+
+PATHWAY = FOR EVERY SYMBOL IN SYMBOL COMBINATIONS :
+	COMBINATIONS(SYMBOL COMBINATIONS)
+Quote :>> USDNGN = 997NGN
+
+From(z) | Through(y)  | To(x)
+  NGN	 ->  USD  ->	BTC
+
+IMPLIED: >> UNKNOWN
+
+IF 1 BTC == 70 000 000 NGN(xz) AND 1 BTC == 70 000 USD(xy):
+	THEN 1 USD = 70 000 000 NGN(xz) / 70 000 USD(XY)
+	IMPLIED = 1 USD = 1000 NGN
+IMPLIED: >> USDNGN = 1000NGN
+
+THEREFORE ARBITRAGE EXISTS
+
+In this process the user/server gives the input of a certain quote. But we run a permutation to get the combinations of symbols and then a combination to get a path for the symbols to follow
+
+CAPITAL = 1000 NGN
+
+1 USD = 997 NGN [QUOTE] -> CONVERTS CAPITAL
+X USD =  1000 NGN 
+
+X USD = 1000 / 997 =  1.003009 USD
+
+1 BTC = 70 000 USD
+X BTC = 1.003009 USD -> CONVERTS INTERMEDIARY
+X BTC = 1.003009 / 70 000 = 0.0000143287 BTC 
+
+1 BTC = 70 000 000 NGN
+0.0000143287 BTC = X NGN
+X NGN  = 1003 NGN
+
+WE GET A PNL OF 1003 - 1000 NGN WHICH IS 3 NGN. 
+
+the permutation helps to test for all six combinations 
+
+Lets find a way to avoid the sequential method and see the results 
+
+Happy coding
+
+Test data 1:
+
+>> # This was run on a python terminal and we record the user inputs and some observations on the output of the operation. 
+>> # Also this result is based on the sequential process code. The code documentation is available on this folder
+
+Input Currency: >> BTC
+Input Currency: >> usd
+Input Currency: >> ngn
+Input value for BTCngn : >> 70000000
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08}
+
+Input value for BTCusd : >> 70000
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05}
+
+Input value for usdngn : >> 997
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05, 'usdngn': 997.0, 'ngnusd': 0.0010030090270812437}
+
+['BTCngn', 'BTCusd', 'usdngn'] # >> symbols 
+['ngnBTC', 'usdBTC', 'ngnusd'] # >> inv_symbols - inverted symbols 
+
+{'BTCngn': 70000000.0, 'ngnBTC': 1.4285714285714286e-08, 'BTCusd': 70000.0, 'usdBTC': 1.4285714285714285e-05, 'usdngn': 997.0, 'ngnusd': 0.0010030090270812437}
+
+
+The quoted is 997.0 and the implied is 1000.0 70210.63189568707 # >> gives the implied cross rates of usd ngn and btc usd
+You will get a profit of 3.00902708124363 # >> this value is in ngn from investing 1000 ngn
+
+The quoted is 70000000.0 and the implied is 69790000.0 1.4242857142857143e-05 # >> gives the implied cross rates of btc ngn and usd btc 
+You will make a loss of 3.0
+
+The quoted is 70000.0 and the implied is 70210.63189568705 1.4328700386874911e-08
+You will get a profit of 3.009027081243744
+
+The quoted is 1.4285714285714286e-08 and the implied is 1.432870038687491e-08 1000.0
+You will get a profit of 3.00902708124363
+
+The quoted is 1.4285714285714285e-05 and the implied is 1.4242857142857143e-05 0.001
+You will make a loss of 3.0
+
+The quoted is 0.001003009027081243 and the implied is 0.001 69790000.0
+You will make a loss of 3.0
+
+Also Notice that when the implied rate is larger than the quoted rate, the transaction always yielded a profit. Lets also check another Test data
+
+
+Test Data 2:
+
+Input Currency: >> eur
+Input Currency: >> gbp
+Input Currency: >> ngn
+
+Input value for eurngn : >> 1230
+Input value for eurgbp : >> 1.11
+Input value for gbpngn : >> 1340
+
+['eurngn', 'eurgbp', 'gbpngn']
+['ngneur', 'gbpeur', 'ngngbp']
+
+{'eurngn': 1230.0, 'ngneur': 0.0008130081300813008, 'eurgbp': 1.11, 'gbpeur': 0.9009009009009008, 'gbpngn': 1340.0, 'ngngbp': 0.0007462686567164179}
+The quoted is 1340.0 and the implied is 1108.108108108108 0.917910447761194
+You will make a loss of 173.0536506655909
+
+The quoted is 1230.0 and the implied is 1487.4 1.089430894308943
+You will get a profit of 209.2682926829268
+
+The quoted is 1.11 and the implied is 0.917910447761194 0.000672314105149926
+You will make a loss of 173.0536506655909
+
+The quoted is 0.0008130081300813008 and the implied is 0.000672314105149926 1108.108108108108
+You will make a loss of 173.05365066559102
+
+The quoted is 0.9009009009009008 and the implied is 1.089430894308943 0.000902439024390244
+You will get a profit of 209.26829268292704
+
+The quoted is 0.0007462686567164179 and the implied is 0.0009024390243902439 1487.4
+You will get a profit of 209.26829268292704
