@@ -1,7 +1,7 @@
 This Documentation explains the sequential and vectorized form of handling the triangular arbitrage with Python
 
-An arbitrage is a discrepancy in the value of comodities in the financial markets. When a comodity is quoted at a certain rate and the value of that same comodity
-with respect to another comodity is quoted we can find the implied rate of the comodity if we just check out the conversion rates
+An arbitrage is a discrepancy in the value of comodities in the financial markets. When a comodity is quoted at a certain rate and the value 
+of that same comodity with respect to another comodity is quoted we can find the implied rate of the comodity if we just check out the conversion rates
 
 1 btc = 70 000 000 ngn
 1 btc = 70 000 usd
@@ -20,7 +20,7 @@ ngn -> btc -> usd | quoted is btc ngn | transaction 2 -> xz is usd ngn, xy is us
 usd -> ngn -> btc | quoted is ngn usd | transaction 3 -> xz is btc usd, xy is btc ngn []
 usd -> btc -> ngn | quoted is btc usd | transaction 4 -> '' is ngn usd, xy is ngn btc [d]
 btc -> usd -> ngn | quoted is usd btc | transaction 5 -> '' is ngn btc, xy is ngn usd [d]
-btc -> ngn -> usd | quoted is ngn btc | transaction 6 -> '' is usd btc, xy is usd ngn[d]
+btc -> ngn -> usd | quoted is ngn btc | transaction 6 -> '' is usd btc, xy is usd ngn [d]
 
 
 these quotes are definitely from the first permutaions 

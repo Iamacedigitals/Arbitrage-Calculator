@@ -1,0 +1,243 @@
+Alright i need to see how i can make a better formula for this instead of using brute force method which is both stressful and shitty
+Remember each Implied rate is calculated interms of the quoted rates and the inverted rates of the other symbols.
+
+Where BTC USD = 70000
+We can now say the Implied for BTC USD  = currecny A USD  / currency B BTC 
+
+if we have other pairs slashed with usd and btc we can say that
+BTC USD = np.array([currecny A]) USD / np.array([currency B]) BTC 
+
+so how can we get a proper model for calculating this, Thst
+Talk about Chatgpt Research:
+
+
+Precision: financial systems should avoid plain double floats for settled money calculations. Options:
+
+Use integer smallest units (satoshis for BTC, kobo for NGN) and treat rates as rational scaling factors.
+
+Use Python decimal.Decimal with properly set context/precision. This will be slower but precise.
+
+For high-frequency low-latency checks (tick-level), float64 is often used with careful rounding and checks.
+
+Latency/throughput:
+
+For 3 currencies, the vectorized code overhead is negligible. For many currencies, prefer NumPy arrays, avoid Python loops, and pre-compile via numba if you need microsecond speed.
+
+Market realities: must account for spreads, fees, depth (partial fills), slippage, and order book constraints — your pure-quote model assumes immediate full fills at quoted rates which is rarely true on exchanges.
+
+Atomicity / execution: arbitrage profitability often vanishes by the time you place 3 separate orders. Consider using smart order routing, colocated bots, or exchanges that allow multi-leg trades / limit orders with OCO.
+
+Stale data: ensure rates are aligned by timestamp. Vectorization must operate on synchronized quotes.
+
+
+Unit tests using your Test Data 1 and Test Data 2 — they should reproduce the PNL outputs you pasted.
+
+Edge cases:
+
+Missing pairs (NaNs) — the matrix builder should raise or skip.
+
+Zero or negative rates — validate input.
+
+Very small rates (tiny floats) — check underflow.
+
+Quick numeric check: for every triplet (a,b,c), factor * factor_inverse ≈ 1 when using reciprocals properly.
+
+
+
+
+
+Give a 1–2 sentence summary of what this chunk does.
+
+Point out the hotspots that block vectorization.
+
+Show a clean, fully vectorized replacement module (pure NumPy / pandas) that reproduces the six-trade outputs automatically (no manual transaction1...transaction6 calls).
+
+Include a quick example that uses your Test Data 1 and Test Data 2 so you can compare results.
+
+End with integration / production notes.
+
+1) Short summary
+
+Your script collects 3 currency codes, asks the user for 3 quoted directed rates (for the permutation pairs), stores reciprocals, then builds 6 triangular transactions manually by instantiating an Arbitrage object per permutation and printing P&L for each.
+
+2) Hotspots / what to fix for vectorization
+
+Manual loop for collecting inputs is fine, but building symbols / inv_symbols and then creating 6 individual Arbitrage instances is hard-coded and not scalable.
+
+The core work (computing implied rates and P&L) is done per-transaction at Python level — those per-transaction scalar operations can be batched and computed with vectorized matrix ops.
+
+Parsing keys like 'BTCNGN' is brittle; better to treat inputs as pairs or build a 2D rate matrix and work from that.
+
+No explicit timestamp/sync or fee/slippage handling — fine for prototype, but keep in mind for production.
+
+3) Vectorized replacement
+
+Save this as, e.g., vectorized_triangular.py. It does not use your Arbitrage_module; it implements the same math in a vectorized, testable way and prints comparable outputs for the 6 permutations.
+
+# vectorized_triangular.py
+import numpy as np
+import pandas as pd
+from itertools import permutations
+
+def parse_quoted_dict(currencies, quoted):
+    """
+    Build a full directed rate DataFrame from a quoted dict whose keys are concatenated currency codes.
+    currencies: list like ['BTC','USD','NGN']
+    quoted: dict e.g. {'BTCNGN': 70000000.0, 'BTCUSD': 70000.0, 'USDNGN': 997.0}
+    Returns: rates DataFrame where rates.loc[p,q] = units of q per 1 p
+    """
+    idx = list(currencies)
+    rates = pd.DataFrame(np.nan, index=idx, columns=idx, dtype=float)
+    np.fill_diagonal(rates.values, 1.0)
+
+    # Fill quoted and reciprocals
+    for key, val in quoted.items():
+        # find split such that left+right == key
+        found = False
+        for a in idx:
+            if key.startswith(a):
+                b = key[len(a):]
+                if b in idx:
+                    rates.loc[a, b] = float(val)
+                    rates.loc[b, a] = 1.0 / float(val)
+                    found = True
+                    break
+        if not found:
+            raise ValueError(f"Could not parse quoted key '{key}' with currencies {idx}")
+
+    # Fill missing via transitive closure (small N)
+    changed = True
+    while changed:
+        changed = False
+        for i in idx:
+            for j in idx:
+                if pd.isna(rates.loc[i,j]):
+                    for k in idx:
+                        if not pd.isna(rates.loc[i,k]) and not pd.isna(rates.loc[k,j]):
+                            rates.loc[i,j] = rates.loc[i,k] * rates.loc[k,j]
+                            changed = True
+                            break
+    return rates
+
+def implied_cross_from_base(rates, base):
+    """
+    Vectorized implied rates using 'base':
+    implied[j,k] = rate[base,k] / rate[base,j]
+    Returns DataFrame indexed/columns by currencies.
+    """
+    row = rates.loc[base].values.astype(float)  # rate[base -> *]
+    # avoid division by zero
+    with np.errstate(divide='ignore', invalid='ignore'):
+        mat = row.reshape(1, -1) / row.reshape(-1, 1)
+    return pd.DataFrame(mat, index=rates.index, columns=rates.columns)
+
+def all_triangular_results(rates, capital=1000.0):
+    """
+    Compute factor, final amount, and pnl for all ordered triangular cycles a->b->c->a
+    Returns DataFrame with rows for each cycle.
+    """
+    currencies = list(rates.index)
+    perms = list(permutations(currencies, 3))
+    rows = []
+    for a,b,c in perms:
+        ra_b = rates.loc[a,b]
+        rb_c = rates.loc[b,c]
+        rc_a = rates.loc[c,a]
+        if pd.isna(ra_b) or pd.isna(rb_c) or pd.isna(rc_a):
+            continue
+        factor = ra_b * rb_c * rc_a
+        final = capital * factor
+        pnl = final - capital
+        rows.append({
+            'path': f"{a}->{b}->{c}->{a}",
+            'start': a, 'mid': b, 'end': c,
+            'rate_ab': ra_b, 'rate_bc': rb_c, 'rate_ca': rc_a,
+            'factor': factor, 'final': final, 'pnl': pnl
+        })
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df = df.sort_values(by='pnl', ascending=False).reset_index(drop=True)
+    return df
+
+def implied_and_compare(rates, capital=1000.0):
+    """
+    For each base currency compute implied cross rates and compare quoted vs implied for the 3 relevant cross pairs.
+    Returns a structure of comparisons and the triangular results (6 cycles).
+    """
+    currencies = list(rates.index)
+    comparisons = []
+    # for each base, compute implied matrix and compare each off-diagonal pair
+    for base in currencies:
+        implied = implied_cross_from_base(rates, base)
+        # consider all ordered pairs j!=k
+        for j in currencies:
+            for k in currencies:
+                if j == k: 
+                    continue
+                quoted = rates.loc[j,k]
+                implied_jk = implied.loc[j,k]
+                comparisons.append({
+                    'base': base,
+                    'j': j, 'k': k,
+                    'quoted_jk': quoted,
+                    'implied_jk': implied_jk
+                })
+    tri = all_triangular_results(rates, capital=capital)
+    return pd.DataFrame(comparisons), tri
+
+# ---- Example usage to match your Test Data 1 and 2 ----
+if __name__ == "__main__":
+    # Test Data 1 (your BTC / USD / NGN example)
+    currencies = ['BTC','USD','NGN']
+    quoted1 = {'BTCNGN': 70_000_000.0, 'BTCUSD': 70_000.0, 'USDNGN': 997.0}
+    rates1 = parse_quoted_dict(currencies, quoted1)
+    comps1, tri1 = implied_and_compare(rates1, capital=1000.0)
+    print("Rates matrix:\n", rates1, "\n")
+    print("Implied vs quoted comparisons (sample rows):\n", comps1.head(9).to_string(index=False), "\n")
+    print("Triangular results (6 permutations):\n", tri1.to_string(index=False), "\n\n")
+
+    # Test Data 2 (EUR/GBP/NGN example)
+    currencies2 = ['EUR','GBP','NGN']
+    quoted2 = {'EURNGN': 1230.0, 'EURGBP': 1.11, 'GBPNGN': 1340.0}
+    rates2 = parse_quoted_dict(currencies2, quoted2)
+    comps2, tri2 = implied_and_compare(rates2, capital=1000.0)
+    print("Rates matrix 2:\n", rates2, "\n")
+    print("Implied vs quoted comparisons (sample rows):\n", comps2.head(9).to_string(index=False), "\n")
+    print("Triangular results 2 (6 permutations):\n", tri2.to_string(index=False))
+
+
+What changed (vectorization & automation):
+
+The quoted rates are placed into a 2D directed rate matrix. Reciprocals are set automatically.
+
+implied_cross_from_base computes all implied cross rates for a chosen base with a single vectorized division (broadcast).
+
+all_triangular_results programmatically builds the 6 triangular cycles (or more if you add currencies) and computes factor, final, and pnl. No manual transaction1...transaction6.
+
+The script includes implied_and_compare which returns the implied-vs-quoted comparisons (so you can reproduce your prints like “quoted is X and implied is Y”).
+
+The code is readable and ready to plug into a real ingest loop (you only need to replace quoted dict construction with live feed parsing).
+
+4) Quick run / expected outputs
+
+Run python vectorized_triangular.py — it will print:
+
+the rate matrix,
+
+a sample of implied-vs-quoted comparisons,
+
+the 6 triangular results with factor, final, and pnl.
+
+You should see the same numeric P&L values you pasted for Test Data 1 and Test Data 2 (within float rounding limits).
+
+5) Integration & production notes (short)
+
+Plugging into your system: replace the interactive input() collection with a small parser that maps exchange pair names (like 'BTC/NGN' or 'BTCNGN') to the quoted dict. Then call parse_quoted_dict + implied_and_compare.
+
+Fees & spreads: incorporate multiplicative fee factors on each rate: rate_after_fee = rate * (1 - taker_fee) (or minus spread). This can be applied element-wise to the rates DataFrame before computing factors.
+
+Depth & partial fills: this model assumes you can fully fill each leg at quoted rate; in production you must simulate order book depth and worst-case slippage.
+
+Precision: if you need exact money math, consider decimal.Decimal or integer smallest units; for scanning on many paths float64 is usually used with careful tolerance checks.
+
+Scaling: for N currencies, the number of ordered triplets is N*(N-1)*(N-2). If N becomes large (> ~100), move heavy math to NumPy arrays with vectorized indexing or numba loops (compiled) for speed.
